@@ -1,33 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
 import { yyEva } from "yyeva";
 
-function VideoContent() {
+function AlphaVideoPlayer({ index }) {
   const containerRef = useRef(null);
   const videoPlayerRef = useRef(null);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     let player = null;
-
     const initVideo = async () => {
       if (!containerRef.current) return;
-
-      try {
         // 创建yyEva实例
         player = await yyEva({
           container: containerRef.current,
-          videoUrl: "./images/output_joined.mp4",
+          videoUrl: `./images/car${index}.mp4`,
+          "alphaDirection": "right",
+          // videoUrl: `./images/p${index}.mp4`,
           loop: true,
           autoplay: true,
-          renderType: "webgl",
+          renderType: "webgpu",
         });
 
         videoPlayerRef.current = player;
-        console.log("视频播放成功", player);
-      } catch (err) {
-        console.error("视频加载失败:", err);
-        setError("视频加载失败，请检查视频文件路径");
-      }
+        console.log(`视频播放器 ${index} 播放成功`, player);
     };
 
     initVideo();
@@ -38,7 +32,7 @@ function VideoContent() {
         try {
           videoPlayerRef.current.destroy();
         } catch (err) {
-          console.error("销毁视频实例失败:", err);
+          console.error(`销毁视频播放器 ${index} 实例失败:`, err);
         }
         videoPlayerRef.current = null;
       }
@@ -46,17 +40,11 @@ function VideoContent() {
   }, []);
 
   return (
-    <div className="video-container">
-      <div className="video-wrapper">
-        {error ? (
-          <div className="error-message">{error}</div>
-        ) : (
-          <div ref={containerRef} className="video-canvas"></div>
-        )}
-      </div>
+    <div className="video-wrapper">
+        <div ref={containerRef} className="video-canvas"></div>
     </div>
   );
 }
 
-export default VideoContent;
+export default AlphaVideoPlayer;
 
